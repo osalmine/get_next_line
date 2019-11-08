@@ -1,0 +1,151 @@
+7.1 The Text Content-Type
+The text Content-Type is intended for sending material which is principally textual in form. It is the default Content- Type. A "charset" parameter may be used to indicate the character set of the body text. The primary subtype of text is "plain". This indicates plain (unformatted) text. The default Content-Type for Internet mail is "text/plain; charset=us-ascii".
+
+Beyond plain text, there are many formats for representing what might be known as "extended text" -- text with embedded formatting and presentation information. An interesting characteristic of many such representations is that they are to some extent readable even without the software that interprets them. It is useful, then, to distinguish them, at the highest level, from such unreadable data as images, audio, or text represented in an unreadable form. In the absence of appropriate interpretation software, it is reasonable to show subtypes of text to the user, while it is not reasonable to do so with most nontextual data.
+
+Such formatted textual data should be represented using subtypes of text. Plausible subtypes of text are typically given by the common name of the representation format, e.g., "text/richtext".
+
+7.1.1 The charset parameter
+A critical parameter that may be specified in the Content- Type field for text data is the character set. This is specified with a "charset" parameter, as in:
+
+Content-type: text/plain; charset=us-ascii
+
+Unlike some other parameter values, the values of the charset parameter are NOT case sensitive. The default character set, which must be assumed in the absence of a charset parameter, is US-ASCII.
+
+An initial list of predefined character set names can be found at the end of this section. Additional character sets may be registered with IANA as described in Appendix F, although the standardization of their use requires the usual IAB review and approval. Note that if the specified character set includes 8-bit data, a Content-Transfer- Encoding header field and a corresponding encoding on the data are required in order to transmit the body via some mail transfer protocols, such as SMTP.
+
+The default character set, US-ASCII, has been the subject of some confusion and ambiguity in the past. Not only were there some ambiguities in the definition, there have been wide variations in practice. In order to eliminate such ambiguity and variations in the future, it is strongly recommended that new user agents explicitly specify a character set via the Content-Type header field. "US-ASCII" does not indicate an arbitrary seven-bit character code, but specifies that the body uses character coding that uses the exact correspondence of codes to characters specified in ASCII. National use variations of ISO 646 [ISO-646] are NOT ASCII and their use in Internet mail is explicitly discouraged. The omission of the ISO 646 character set is deliberate in this regard. The character set name of "US- ASCII" explicitly refers to ANSI X3.4-1986 [US-ASCII] only. The character set name "ASCII" is reserved and must not be used for any purpose.
+
+NOTE: RFC 821 explicitly specifies "ASCII", and references an earlier version of the American Standard. Insofar as one of the purposes of specifying a Content-Type and character set is to permit the receiver to unambiguously determine how the sender intended the coded message to be interpreted, assuming anything other than "strict ASCII" as the default would risk unintentional and incompatible changes to the semantics of messages now being transmitted. This also implies that messages containing characters coded according to national variations on ISO 646, or using code-switching procedures (e.g., those of ISO 2022), as well as 8-bit or multiple octet character encodings MUST use an appropriate character set specification to be consistent with this specification.
+
+The complete US-ASCII character set is listed in [US-ASCII]. Note that the control characters including DEL (0-31, 127) have no defined meaning apart from the combination CRLF (ASCII values 13 and 10) indicating a new line. Two of the characters have de facto meanings in wide use: FF (12) often means "start subsequent text on the beginning of a new page"; and TAB or HT (9) often (though not always) means "move the cursor to the next available column after the current position where the column number is a multiple of 8 (counting the first column as column 0)." Apart from this, any use of the control characters or DEL in a body must be part of a private agreement between the sender and recipient. Such private agreements are discouraged and should be replaced by the other capabilities of this document. NOTE: Beyond US-ASCII, an enormous proliferation of character sets is possible. It is the opinion of the IETF working group that a large number of character sets is NOT a good thing. We would prefer to specify a single character set that can be used universally for representing all of the world's languages in electronic mail. Unfortunately, existing practice in several communities seems to point to the continued use of multiple character sets in the near future. For this reason, we define names for a small number of character sets for which a strong constituent base exists. It is our hope that ISO 10646 or some other effort will eventually define a single world character set which can then be specified for use in Internet mail, but in the advance of that definition we cannot specify the use of ISO 10646, Unicode, or any other character set whose definition is, as of this writing, incomplete.
+
+The defined charset values are:
+
+US-ASCII
+as defined in [US-ASCII].
+ISO-8859-X
+where "X" is to be replaced, as necessary, for the parts of ISO-8859 [ISO- 8859]. Note that the ISO 646 character sets have deliberately been omitted in favor of their 8859 replacements, which are the designated character sets for Internet mail. As of the publication of this document, the legitimate values for "X" are the digits 1 through 9.
+Note that the character set used, if anything other than US-ASCII, must always be explicitly specified in the Content-Type field.
+No other character set name may be used in Internet mail without the publication of a formal specification and its registration with IANA as described in Appendix F, or by private agreement, in which case the character set name must begin with "X-".
+
+Implementors are discouraged from defining new character sets for mail use unless absolutely necessary.
+
+The "charset" parameter has been defined primarily for the purpose of textual data, and is described in this section for that reason. However, it is conceivable that non- textual data might also wish to specify a charset value for some purpose, in which case the same syntax and values should be used.
+
+In general, mail-sending software should always use the "lowest common denominator" character set possible. For example, if a body contains only US-ASCII characters, it should be marked as being in the US-ASCII character set, not ISO-8859-1, which, like all the ISO-8859 family of character sets, is a superset of US-ASCII. More generally, if a widely-used character set is a subset of another character set, and a body contains only characters in the widely-used subset, it should be labeled as being in that subset. This will increase the chances that the recipient will be able to view the mail correctly.
+
+7.1.2 The Text/plain subtype
+
+The primary subtype of text is "plain". This indicates plain (unformatted) text. The default Content-Type for Internet mail, "text/plain; charset=us-ascii", describes existing Internet practice, that is, it is the type of body defined by RFC 822.
+
+7.1.3 The Text/richtext subtype
+In order to promote the wider interoperability of simple formatted text, this document defines an extremely simple subtype of "text", the "richtext" subtype. This subtype was designed to meet the following criteria:
+
+1. The syntax must be extremely simple to parse, so that even teletype-oriented mail systems can easily strip away the formatting information and leave only the readable text.
+2. The syntax must be extensible to allow for new formatting commands that are deemed essential.
+3. The capabilities must be extremely limited, to ensure that it can represent no more than is likely to be representable by the user's primary word processor. While this limits what can be sent, it increases the likelihood that what is sent can be properly displayed.
+4. The syntax must be compatible with SGML, so that, with an appropriate DTD (Document Type Definition, the standard mechanism for defining a document type using SGML), a general SGML parser could be made to parse richtext. However, despite this compatibility, the syntax should be far simpler than full SGML, so that no SGML knowledge is required in order to implement it.
+The syntax of "richtext" is very simple. It is assumed, at the top-level, to be in the US-ASCII character set, unless of course a different charset parameter was specified in the Content-type field. All characters represent themselves, with the exception of the "<" character (ASCII 60), which is used to mark the beginning of a formatting command. Formatting instructions consist of formatting commands surrounded by angle brackets ("<>", ASCII 60 and 62). Each formatting command may be no more than 40 characters in length, all in US-ASCII, restricted to the alphanumeric and hyphen ("-") characters. Formatting commands may be preceded by a forward slash or solidus ("/", ASCII 47), making them negations, and such negations must always exist to balance the initial opening commands, except as noted below. Thus, if the formatting command "" appears at some point, there must later be a "" to balance it. There are only three exceptions to this "balancing" rule: First, the command "" is used to represent a literal "<" character. Second, the command "" is used to represent a required line break. (Otherwise, CRLFs in the data are treated as equivalent to a single SPACE character.) Finally, the command "" is used to represent a page break. (NOTE: The 40 character limit on formatting commands does not include the "<", ">", or "/" characters that might be attached to such commands.)
+
+Initially defined formatting commands, not all of which will be implemented by all richtext implementations, include:
+
+Bold
+causes the subsequent text to be in a bold font.
+Italic
+causes the subsequent text to be in an italic font.
+Fixed
+causes the subsequent text to be in a fixed width font.
+Smaller
+causes the subsequent text to be in a smaller font.
+Bigger
+causes the subsequent text to be in a bigger font.
+Underline
+causes the subsequent text to be underlined.
+Center
+causes the subsequent text to be centered.
+FlushLeft
+causes the subsequent text to be left justified.
+FlushRight
+causes the subsequent text to be right justified.
+Indent
+causes the subsequent text to be indented at the left margin.
+IndentRight
+causes the subsequent text to be indented at the right margin.
+Outdent
+causes the subsequent text to be outdented at the left margin.
+OutdentRight
+causes the subsequent text to be outdented at the right margin.
+SamePage
+causes the subsequent text to be grouped, if possible, on one page.
+Subscript
+causes the subsequent text to be interpreted as a subscript.
+Superscript
+causes the subsequent text to be interpreted as a superscript.
+Heading
+causes the subsequent text to be interpreted as a page heading.
+Footing
+causes the subsequent text to be interpreted as a page footing.
+ISO-8859-X (for any value of X that is legal as a "charset" parameter)
+causes the subsequent text to be interpreted as text in the appropriate character set.
+US-ASCII
+causes the subsequent text to be interpreted as text in the US-ASCII character set.
+Excerpt
+causes the subsequent text to be interpreted as a textual excerpt from another source. Typically this will be displayed using indentation and an alternate font, but such decisions are up to the viewer.
+Paragraph
+causes the subsequent text to be interpreted as a single paragraph, with appropriate paragraph breaks (typically blank space) before and after.
+Signature
+causes the subsequent text to be interpreted as a "signature". Some systems may wish to display signatures in a smaller font or otherwise set them apart from the main text of the message.
+Comment
+causes the subsequent text to be interpreted as a comment, and hence not shown to the reader.
+No-op
+has no effect on the subsequent text.
+lt
+is replaced by a literal "<" character. No balancing is allowed.
+nl
+causes a line break. No balancing is allowed.
+np
+causes a page break. No balancing is allowed.
+Each positive formatting command affects all subsequent text until the matching negative formatting command. Such pairs of formatting commands must be properly balanced and nested. Thus, a proper way to describe text in bold italics is:
+
+          <bold><italic>the-text</italic></bold>
+or, alternately,
+
+          <italic><bold>the-text</bold></italic>
+but, in particular, the following is illegal richtext:
+
+          <bold><italic>the-text</bold></italic>
+NOTE: The nesting requirement for formatting commands imposes a slightly higher burden upon the composers of richtext bodies, but potentially simplifies richtext displayers by allowing them to be stack-based. The main goal of richtext is to be simple enough to make multifont, formatted email widely readable, so that those with the capability of sending it will be able to do so with confidence. Thus slightly increased complexity in the composing software was deemed a reasonable tradeoff for simplified reading software. Nonetheless, implementors of richtext readers are encouraged to follow the general Internet guidelines of being conservative in what you send and liberal in what you accept. Those implementations that can do so are encouraged to deal reasonably with improperly nested richtext.
+Implementations must regard any unrecognized formatting command as equivalent to "No-op", thus facilitating future extensions to "richtext". Private extensions may be defined using formatting commands that begin with "X-", by analogy to Internet mail header field names.
+
+It is worth noting that no special behavior is required for the TAB (HT) character. It is recommended, however, that, at least when fixed-width fonts are in use, the common semantics of the TAB (HT) character should be observed, namely that it moves to the next column position that is a multiple of 8. (In other words, if a TAB (HT) occurs in column n, where the leftmost column is column 0, then that TAB (HT) should be replaced by 8-(n mod 8) SPACE characters.)
+
+Richtext also differentiates between "hard" and "soft" line breaks. A line break (CRLF) in the richtext data stream is interpreted as a "soft" line break, one that is included only for purposes of mail transport, and is to be treated as white space by richtext interpreters. To include a "hard" line break (one that must be displayed as such), the "" or " formatting constructs should be used. In general, a soft line break should be treated as white space, but when soft line breaks immediately follow a or a tag they should be ignored rather than treated as white space.
+
+Putting all this together, the following "text/richtext" body fragment:
+
+
+          <bold>Now</bold> is the time for
+          <italic>all</italic> good men
+           <smaller>(and <lt>women>)</smaller> to
+          <ignoreme></ignoreme> come
+
+          to the aid of their
+          <nl>
+          beloved <nl><nl>country. <comment> Stupid
+          quote! </comment> -- the end
+represents the following formatted text (which will, no doubt, look cryptic in the text-only version of this document):
+
+     Now is the time for all good men (and <women>)  to
+     come to the aid of their
+     beloved
+
+     country. -- the end
+Richtext conformance: A minimal richtext implementation is one that simply converts "" to "<", converts CRLFs to SPACE, converts to a newline according to local newline convention, removes everything between a command and the next balancing command, and removes all other formatting commands (all text enclosed in angle brackets).
+NOTE ON THE RELATIONSHIP OF RICHTEXT TO SGML
+Richtext is decidedly not SGML, and must not be used to transport arbitrary SGML documents. Those who wish to use SGML document types as a mail transport format must define a new text or application subtype, e.g., "text/sgml-dtd-whatever" or "application/sgml-dtd-whatever", depending on the perceived readability of the DTD in use. Richtext is designed to be compatible with SGML, and specifically so that it will be possible to define a richtext DTD if one is needed. However, this does not imply that arbitrary SGML can be called richtext, nor that richtext implementors have any need to understand SGML; the description in this document is a complete definition of richtext, which is far simpler than complete SGML.
+NOTE ON THE INTENDED USE OF RICHTEXT: It is recognized that implementors of future mail systems will want rich text functionality far beyond that currently defined for richtext. The intent of richtext is to provide a common format for expressing that functionality in a form in which much of it, at least, will be understood by interoperating software. Thus, in particular, software with a richer notion of formatted text than richtext can still use richtext as its basic representation, but can extend it with new formatting commands and by hiding information specific to that software system in richtext comments. As such systems evolve, it is expected that the definition of richtext will be further refined by future published specifications, but richtext as defined here provides a platform on which evolutionary refinements can be based.
+
+IMPLEMENTATION NOTE: In some environments, it might be impossible to combine certain richtext formatting commands, whereas in others they might be combined easily. For example, the combination of and might produce bold italics on systems that support such fonts, but there exist systems that can make text bold or italicized, but not both. In such cases, the most recently issued recognized formatting command should be preferred.
+
+One of the major goals in the design of richtext was to make it so simple that even text-only mailers will implement richtext-to-plain-text translators, thus increasing the likelihood that multifont text will become "safe" to use very widely. To demonstrate this simplicity, an extremely simple 35-line C program that converts richtext input into plain text output is included in Appendix D.
